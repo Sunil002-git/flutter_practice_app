@@ -130,6 +130,7 @@ import 'column.dart';
 // import 'row.dart';
 // import 'padding.dart';
 import 'practice.dart';
+import 'practise_2.dart';
 
 void main() {
   runApp(
@@ -138,7 +139,8 @@ void main() {
       // home: ColumnPage(),
       // home: RowPage(),
       // home: PaddingPage(),
-      home: PracticeApp(),
+      // home: PracticeApp(),
+      home: Practice2(),
     ),
   );
 }
