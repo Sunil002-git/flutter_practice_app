@@ -143,7 +143,7 @@ void main() {
       // home: RowPage(),
       // home: PaddingPage(),
       // home: PracticeApp(),
-      home: StudentList(),
+      home: FruitsList(),
     ),
   );
 }
