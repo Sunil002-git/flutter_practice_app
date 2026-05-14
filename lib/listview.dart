@@ -137,8 +137,16 @@ class _FruitsListState extends State<FruitsList> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  fruits.add(fruitsController.text);
-                  fruitsController.clear();
+                  if (fruitsController.text.isNotEmpty) {
+                    fruits.add(fruitsController.text);
+                    fruitsController.clear();
+                  } else {
+                    // Text("Enter Data");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please Enter fruit name"),
+                      ),
+                    );
+                  }
                 });
               },
               child: const Text("AddFruit"),
@@ -155,6 +163,16 @@ class _FruitsListState extends State<FruitsList> {
                     title: Text(fruits[index]),
 
                     subtitle: Text("Price ${index + 30}"),
+
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+
+                      onPressed: () {
+                        setState(() {
+                          fruits.removeAt(index);
+                        });
+                      },
+                    ),
                   );
                 },
               ),
