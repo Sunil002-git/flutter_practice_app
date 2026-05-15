@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/task_screen.dart';
+import 'package:stockfolio_mobile/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
 
-      home: const TaskScreen(),
+      home: const LoginScreen(),
     );
   }
 }
