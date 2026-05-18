@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:stockfolio_mobile/screens/login_screen.dart';
+
+import 'package:provider/provider.dart';
+import 'package:stockfolio_mobile/screens/splash_screen.dart';
+
+import 'providers/auth_provider.dart';
+
+import 'screens/login_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+
+  runApp(
+
+    ChangeNotifierProvider(
+
+      create: (_) => AuthProvider(),
+
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   @override
@@ -13,9 +29,45 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
 
-      debugShowCheckedModeBanner: false,
+  debugShowCheckedModeBanner: false,
 
-      home: const LoginScreen(),
-    );
+  theme: ThemeData(
+
+    primarySwatch: Colors.blue,
+
+    scaffoldBackgroundColor:
+        Colors.grey.shade100,
+
+    appBarTheme: const AppBarTheme(
+
+      backgroundColor: Colors.white,
+
+      foregroundColor: Colors.black,
+
+      elevation: 0,
+    ),
+
+    elevatedButtonTheme:
+
+        ElevatedButtonThemeData(
+
+          style: ElevatedButton.styleFrom(
+
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25,
+              vertical: 15,
+            ),
+
+            shape: RoundedRectangleBorder(
+
+              borderRadius:
+                  BorderRadius.circular(12),
+            ),
+          ),
+        ),
+  ),
+
+  home: const SplashScreen(),
+);
   }
 }
