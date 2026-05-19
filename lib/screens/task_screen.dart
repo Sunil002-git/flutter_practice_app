@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
+import '../providers/theme_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/api_constants.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -26,7 +29,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> fetchTasks() async {
     String? token = await getToken();
     final response = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/"),
       headers: {"Authorization": "Bearer $token"},
     );
 
@@ -66,7 +69,7 @@ class _TaskScreenState extends State<TaskScreen> {
   return;
 }
     final response = await http.post(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/"),
 
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +91,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> deleteTask(int id) async {
     String? token = await getToken();
     final response = await http.delete(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/delete/$id/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/delete/$id/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (response.statusCode == 200) {
@@ -103,7 +106,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> updateTask(int id, String title, bool completed) async {
     String? token = await getToken();
     final response = await http.put(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/update/$id/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/update/$id/"),
 
       headers: {
         "Content-Type": "application/json",
@@ -151,6 +154,12 @@ class _TaskScreenState extends State<TaskScreen> {
         centerTitle: true,
 
         actions: [
+          IconButton(onPressed: (){
+            Provider.of<ThemeProvider>(
+              context,
+               listen: false,
+               ).toggleTheme();
+          }, icon: const Icon(Icons.dark_mode,)),
           IconButton(
             onPressed: () {
               logout();

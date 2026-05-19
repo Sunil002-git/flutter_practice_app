@@ -6,68 +6,61 @@ import 'package:stockfolio_mobile/screens/splash_screen.dart';
 import 'providers/auth_provider.dart';
 
 import 'screens/login_screen.dart';
+import 'providers/theme_provider.dart';
 
 void main() {
-
   runApp(
+    // ChangeNotifierProvider(
 
-    ChangeNotifierProvider(
+    //   create: (_) => AuthProvider(),
 
-      create: (_) => AuthProvider(),
-
+    //   child: const MyApp(),
+    // ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
       child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  @override
+Widget build(BuildContext context) {
 
-    return MaterialApp(
+  final themeProvider =
 
-  debugShowCheckedModeBanner: false,
+      Provider.of<ThemeProvider>(
+        context,
+      );
 
-  theme: ThemeData(
+  return MaterialApp(
 
-    primarySwatch: Colors.blue,
+    debugShowCheckedModeBanner: false,
 
-    scaffoldBackgroundColor:
-        Colors.grey.shade100,
+    themeMode:
+        themeProvider.currentTheme,
 
-    appBarTheme: const AppBarTheme(
+    theme: ThemeData(
 
-      backgroundColor: Colors.white,
+      brightness: Brightness.light,
 
-      foregroundColor: Colors.black,
-
-      elevation: 0,
+      primarySwatch: Colors.blue,
     ),
 
-    elevatedButtonTheme:
+    darkTheme: ThemeData(
 
-        ElevatedButtonThemeData(
+      brightness: Brightness.dark,
 
-          style: ElevatedButton.styleFrom(
+      primarySwatch: Colors.blue,
+    ),
 
-            padding: const EdgeInsets.symmetric(
-              horizontal: 25,
-              vertical: 15,
-            ),
-
-            shape: RoundedRectangleBorder(
-
-              borderRadius:
-                  BorderRadius.circular(12),
-            ),
-          ),
-        ),
-  ),
-
-  home: const SplashScreen(),
-);
-  }
+    home: const SplashScreen(),
+  );
+}
 }
