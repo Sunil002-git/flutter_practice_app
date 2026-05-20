@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_constants.dart';
 
 class AuthProvider extends ChangeNotifier {
 
@@ -21,8 +22,7 @@ class AuthProvider extends ChangeNotifier {
     final response = await http.post(
 
       Uri.parse(
-        // "http://10.0.2.2:8000/api/token/",
-        "http://127.0.0.1:8000/api/token/",
+        "${ApiConstants.baseUrl}/api/token/",
       ),
 
       headers: {
@@ -94,5 +94,3 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-// extends ChangeNotifier : Provider can notify UI when state changes
-// notifyListeners(): "Hey UI, rebuild now"

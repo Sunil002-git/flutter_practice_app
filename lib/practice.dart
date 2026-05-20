@@ -45,6 +45,8 @@ import 'package:flutter/material.dart';
 // }
 
 class PracticeApp extends StatelessWidget {
+  const PracticeApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

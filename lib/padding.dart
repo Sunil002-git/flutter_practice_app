@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 // Adds space INSIDE around widgets.
 class PaddingPage extends StatelessWidget {
+  const PaddingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

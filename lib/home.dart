@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockfolio_mobile/profile.dart';
 import 'package:stockfolio_mobile/second_screen.dart';
 
 class HomeScreen extends StatelessWidget {

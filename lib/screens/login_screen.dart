@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stockfolio_mobile/providers/auth_provider.dart';
 import 'package:stockfolio_mobile/screens/task_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:stockfolio_mobile/providers/auth_provider.dart';
+import 'bottom_nav_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,33 +43,52 @@ class _LoginScreenState extends State<LoginScreen> {
   //     ).showSnackBar(const SnackBar(content: Text("Invalid Credentials")));
   //   }
   // }
-  Future<void> login() async {
-    try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.login(
-        usernameController.text,
-        passwordController.text
-      );
+ Future<void> login() async {
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Login Success")));
+  try {
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TaskScreen()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid Credentials"),
-          ),
-          );
-    }
+    final authProvider =
+
+        Provider.of<AuthProvider>(
+          context,
+          listen: false,
+        );
+
+    await authProvider.login(
+
+      usernameController.text,
+
+      passwordController.text,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      const SnackBar(
+        content: Text("Login Success"),
+      ),
+    );
+
+    Navigator.pushReplacement(
+
+      context,
+
+      MaterialPageRoute(
+
+        builder: (context) =>
+            const BottomNavScreen(),
+      ),
+    );
+
+  } catch (e) {
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      const SnackBar(
+        content: Text("Invalid Credentials"),
+      ),
+    );
   }
-
+}
   Future<void> checkLogin() async {
     final prefs = await SharedPreferences.getInstance();
 

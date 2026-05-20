@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
+import '../providers/theme_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/api_constants.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -21,16 +24,19 @@ class _TaskScreenState extends State<TaskScreen> {
   TextEditingController taskController = TextEditingController();
   List tasks = [];
 
+  TextEditingController searchController = TextEditingController();
+  List filteredTasks = [];
   Future<void> fetchTasks() async {
     String? token = await getToken();
     final response = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/"),
       headers: {"Authorization": "Bearer $token"},
     );
 
     if (response.statusCode == 200) {
       setState(() {
         tasks = jsonDecode(response.body);
+        filteredTasks = tasks;
       });
     } else {
       ScaffoldMessenger.of(
@@ -39,10 +45,31 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
+  void searchTasks(String query) {
+    setState(() {
+      filteredTasks = tasks.where((task) {
+         String title =
+          task['title']?.toString() ?? '';
+        return title.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
+
   Future<void> createTask() async {
     String? token = await getToken();
+    if (taskController.text.trim().isEmpty) {
+
+  ScaffoldMessenger.of(context).showSnackBar(
+
+    const SnackBar(
+      content: Text("Enter Task"),
+    ),
+  );
+
+  return;
+}
     final response = await http.post(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/"),
 
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +91,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> deleteTask(int id) async {
     String? token = await getToken();
     final response = await http.delete(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/delete/$id/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/delete/$id/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (response.statusCode == 200) {
@@ -79,7 +106,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> updateTask(int id, String title, bool completed) async {
     String? token = await getToken();
     final response = await http.put(
-      Uri.parse("http://127.0.0.1:8000/api/tasks/update/$id/"),
+      Uri.parse("${ApiConstants.baseUrl}/api/tasks/update/$id/"),
 
       headers: {
         "Content-Type": "application/json",
@@ -118,8 +145,21 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Django Tasks"),
+        title: const Text(
+          "My Tasks",
+
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+
+        centerTitle: true,
+
         actions: [
+          IconButton(onPressed: (){
+            Provider.of<ThemeProvider>(
+              context,
+               listen: false,
+               ).toggleTheme();
+          }, icon: const Icon(Icons.dark_mode,)),
           IconButton(
             onPressed: () {
               logout();
@@ -132,17 +172,66 @@ class _TaskScreenState extends State<TaskScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(10),
+
+  padding: const EdgeInsets.symmetric(
+    horizontal: 15,
+    vertical: 10,
+  ),
+
+  child: TextField(
+
+    controller: searchController,
+
+    onChanged: (value) {
+
+      searchTasks(value);
+
+    },
+
+    decoration: InputDecoration(
+
+      hintText: "Search Tasks",
+
+      prefixIcon:
+          const Icon(Icons.search),
+
+      filled: true,
+
+      fillColor: Colors.white,
+
+      border: OutlineInputBorder(
+
+        borderRadius:
+            BorderRadius.circular(15),
+
+        borderSide: BorderSide.none,
+      ),
+    ),
+  ),
+),
+          Padding(
+            
+            padding: const EdgeInsets.all(15),
 
             child: Row(
               children: [
                 Expanded(
+                  
                   child: TextField(
                     controller: taskController,
 
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Enter Task",
-                      border: OutlineInputBorder(),
+
+                      filled: true,
+
+                      fillColor: Colors.white,
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
@@ -154,61 +243,105 @@ class _TaskScreenState extends State<TaskScreen> {
                     createTask();
                   },
 
-                  child: const Text("Add"),
+                  child: const Icon(Icons.add),
                 ),
               ],
             ),
           ),
 
           Expanded(
-            child: tasks.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: tasks.length,
+            child: RefreshIndicator(
 
+    onRefresh: fetchTasks,
+            child: filteredTasks.isEmpty
+                ? ListView(
+
+            children: const [
+
+              SizedBox(height: 300),
+
+              Center(
+
+                child: Text(
+
+                  "No Tasks Available",
+
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          )
+
+                : ListView.builder(
+                    itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
                       return Card(
-                        margin: const EdgeInsets.all(10),
+                        elevation: 3,
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 8,
+                        ),
 
                         child: ListTile(
+                          contentPadding: const EdgeInsets.all(10),
+
                           leading: Checkbox(
-                            value: tasks[index]['completed'],
+                            value: filteredTasks[index]['completed'],
 
                             onChanged: (value) {
                               updateTask(
-                                tasks[index]['id'],
+                                filteredTasks[index]['id'],
 
-                                tasks[index]['title'],
+                                filteredTasks[index]['title'],
 
-                                tasks[index]['completed'],
+                                filteredTasks[index]['completed'],
                               );
-                            },
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-
-                            onPressed: () {
-                              deleteTask(tasks[index]['id']);
                             },
                           ),
 
                           title: Text(
-                            tasks[index]['title'],
+                            filteredTasks[index]['title'],
 
                             style: TextStyle(
-                              decoration: tasks[index]['completed']
+                              fontSize: 18,
+
+                              fontWeight: FontWeight.w600,
+
+                              decoration: filteredTasks[index]['completed']
                                   ? TextDecoration.lineThrough
                                   : TextDecoration.none,
                             ),
                           ),
 
                           subtitle: Text(
-                            tasks[index]['completed'] ? "Completed" : "Pending",
+                            filteredTasks[index]['completed'] ? "Completed" : "Pending",
+
+                            style: TextStyle(
+                              color: filteredTasks[index]['completed']
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                          ),
+
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+
+                            onPressed: () {
+                              deleteTask(filteredTasks[index]['id']);
+                            },
                           ),
                         ),
                       );
                     },
                   ),
+          ),
           ),
         ],
       ),
